@@ -4,6 +4,7 @@
  */
 
 import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import {
   renderWithProviders,
   mockDashboardData,
@@ -20,20 +21,30 @@ vi.mock('@/hooks/useAuth', () => ({
   }),
 }));
 
-// Mock do useDashboardSummary hook
+let mockRefetch = vi.fn();
+const mockUseDashboardSummary = vi.fn((city: string) => ({
+  data: mockDashboardData,
+  isLoading: false,
+  isError: false,
+  refetch: mockRefetch,
+  isFetching: false,
+}));
+
 vi.mock('@/hooks/useDashboardSummary', () => ({
-  useDashboardSummary: (city: string) => ({
-    data: mockDashboardData,
-    isLoading: false,
-    isError: false,
-    refetch: vi.fn(),
-    isFetching: false,
-  }),
+  useDashboardSummary: (city: string) => mockUseDashboardSummary(city),
 }));
 
 describe('Dashboard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockRefetch = vi.fn();
+    mockUseDashboardSummary.mockImplementation((city: string) => ({
+      data: mockDashboardData,
+      isLoading: false,
+      isError: false,
+      refetch: mockRefetch,
+      isFetching: false,
+    }));
   });
 
   describe('Rendering', () => {
@@ -49,8 +60,7 @@ describe('Dashboard', () => {
     it('should render city filter', () => {
       renderWithProviders(<Dashboard />);
 
-      // Verifica se o filtro de cidade está presente
-      const cityFilter = screen.getByRole('combobox');
+      const cityFilter = screen.getByRole('button', { name: /Brasil \(Nacional\)/i });
       expect(cityFilter).toBeInTheDocument();
     });
 
@@ -83,35 +93,29 @@ describe('Dashboard', () => {
 
   describe('Loading States', () => {
     it('should show loading skeletons when data is loading', () => {
-      // Override mock para estado de loading
-      vi.mock('@/hooks/useDashboardSummary', () => ({
-        useDashboardSummary: () => ({
-          data: undefined,
-          isLoading: true,
-          isError: false,
-          refetch: vi.fn(),
-          isFetching: false,
-        }),
+      mockUseDashboardSummary.mockImplementationOnce(() => ({
+        data: undefined,
+        isLoading: true,
+        isError: false,
+        refetch: mockRefetch,
+        isFetching: false,
       }));
 
       renderWithProviders(<Dashboard />);
 
-      // Verifica se há elementos de loading
-      const skeletons = screen.getAllByTestId(/skeleton/i);
+      const skeletons = screen.getAllByTestId('dashboard-loading-skeleton');
       expect(skeletons.length).toBeGreaterThan(0);
     });
   });
 
   describe('Error States', () => {
     it('should display error alert when data fetch fails', () => {
-      vi.mock('@/hooks/useDashboardSummary', () => ({
-        useDashboardSummary: () => ({
-          data: undefined,
-          isLoading: false,
-          isError: true,
-          refetch: vi.fn(),
-          isFetching: false,
-        }),
+      mockUseDashboardSummary.mockImplementationOnce(() => ({
+        data: undefined,
+        isLoading: false,
+        isError: true,
+        refetch: mockRefetch,
+        isFetching: false,
       }));
 
       renderWithProviders(<Dashboard />);
@@ -122,46 +126,38 @@ describe('Dashboard', () => {
 
   describe('Responsiveness', () => {
     it('should stack buttons vertically on mobile', () => {
-      // Simula mobile viewport
-      Object.defineProperty(window, 'innerWidth', {
-        writable: true,
-        value: 375,
-      });
-
       renderWithProviders(<Dashboard />);
 
-      const buttonsContainer = screen.getByRole('button', {
-        name: /novo projeto/i,
-      }).parentElement;
+      const actionSection = screen
+        .getByRole('button', { name: /comparar cidades/i })
+        ?.closest('div')
+        ?.parentElement;
 
-      // Verifica se tem classes de flex-col (mobile)
-      expect(buttonsContainer?.className).toContain('flex-col');
+      expect(actionSection).toHaveClass('flex-col');
     });
   });
 
   describe('User Interactions', () => {
     it('should refresh data when refresh button is clicked', async () => {
-      const mockRefetch = vi.fn();
-
-      vi.mock('@/hooks/useDashboardSummary', () => ({
-        useDashboardSummary: () => ({
-          data: mockDashboardData,
-          isLoading: false,
-          isError: false,
-          refetch: mockRefetch,
-          isFetching: false,
-        }),
+      const localRefetch = vi.fn();
+      mockUseDashboardSummary.mockImplementationOnce(() => ({
+        data: mockDashboardData,
+        isLoading: false,
+        isError: false,
+        refetch: localRefetch,
+        isFetching: false,
       }));
 
-      const { user } = renderWithProviders(<Dashboard />);
+      renderWithProviders(<Dashboard />);
 
       const refreshButton = screen.getByRole('button', {
         name: /atualizar/i,
       });
 
+      const user = userEvent.setup();
       await user.click(refreshButton);
 
-      expect(mockRefetch).toHaveBeenCalled();
+      expect(localRefetch).toHaveBeenCalled();
     });
   });
 });

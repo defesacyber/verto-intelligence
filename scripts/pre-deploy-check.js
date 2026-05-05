@@ -165,9 +165,9 @@ if (existsSync('src/lib/api.ts')) {
     success.push('✓ src/lib/api.ts parece estar usando APIs reais');
   }
 
-  // Verificar se usa variáveis de ambiente
-  if (apiContent.includes('import.meta.env')) {
-    success.push('  ✓ Usando variáveis de ambiente (import.meta.env)');
+  // Verificar se usa variáveis de ambiente via imports diretos ou wrappers
+  if (apiContent.includes('import.meta.env') || apiContent.includes('getEnv(') || apiContent.includes('validateEnv(')) {
+    success.push('  ✓ Usando variáveis de ambiente (diretamente ou via wrapper)');
   } else {
     errors.push('  ✗ NÃO está usando variáveis de ambiente');
   }

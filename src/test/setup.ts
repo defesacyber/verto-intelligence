@@ -35,7 +35,7 @@ global.IntersectionObserver = class IntersectionObserver {
     return [];
   }
   unobserve() {}
-} as any;
+} as unknown as typeof IntersectionObserver;
 
 // Mock do ResizeObserver (usado para componentes responsivos)
 global.ResizeObserver = class ResizeObserver {
@@ -43,22 +43,22 @@ global.ResizeObserver = class ResizeObserver {
   disconnect() {}
   observe() {}
   unobserve() {}
-} as any;
+} as unknown as typeof ResizeObserver;
 
 // Mock do localStorage
 const localStorageMock = {
-  getItem: vi.fn(),
+  getItem: vi.fn((): string | null => null),
   setItem: vi.fn(),
   removeItem: vi.fn(),
   clear: vi.fn(),
-};
-global.localStorage = localStorageMock as any;
+} as Pick<Storage, 'getItem' | 'setItem' | 'removeItem' | 'clear'>;
+
+global.localStorage = localStorageMock as unknown as Storage;
 
 // Silenciar console.error durante testes (opcional)
 const originalError = console.error;
 beforeAll(() => {
-  console.error = (...args: any[]) => {
-    // Ignora erros específicos do React Testing Library
+  const mockedError = (...args: unknown[]) => {
     if (
       typeof args[0] === 'string' &&
       (args[0].includes('Warning: ReactDOM.render') ||
@@ -68,6 +68,8 @@ beforeAll(() => {
     }
     originalError.call(console, ...args);
   };
+
+  console.error = mockedError as typeof console.error;
 });
 
 afterAll(() => {

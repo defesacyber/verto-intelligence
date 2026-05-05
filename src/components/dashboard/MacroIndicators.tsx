@@ -67,7 +67,7 @@ const formulaMap: Record<string, { formula: string; source: string; description:
 
 function MacroCardSkeleton() {
   return (
-    <div className="flex items-center gap-3 p-3 rounded-lg bg-card border">
+    <div data-testid="dashboard-loading-skeleton" className="flex items-center gap-3 p-3 rounded-lg bg-card border">
       <Skeleton className="h-10 w-10 rounded-lg" />
       <div className="flex-1 space-y-1">
         <Skeleton className="h-3 w-20" />

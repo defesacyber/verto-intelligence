@@ -3,13 +3,13 @@
  * Helpers for memoization, debouncing, and performance monitoring
  */
 
-import { useEffect, useRef, useCallback, useMemo } from 'react';
+import { useEffect, useRef, useCallback, useMemo, useState } from 'react';
 
 /**
  * Debounce a function call
  * Useful for search inputs, resize handlers, etc.
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
@@ -24,11 +24,11 @@ export function debounce<T extends (...args: any[]) => any>(
  * Throttle a function call
  * Useful for scroll handlers, mouse move, etc.
  */
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends (...args: unknown[]) => unknown>(
   func: T,
   limit: number
 ): (...args: Parameters<T>) => void {
-  let inThrottle: boolean;
+  let inThrottle = false;
   return (...args: Parameters<T>) => {
     if (!inThrottle) {
       func(...args);
@@ -122,16 +122,16 @@ export function measureRender(componentName: string) {
 /**
  * Stable callback that won't cause re-renders
  */
-export function useStableCallback<T extends (...args: any[]) => any>(
+export function useStableCallback<T extends (...args: unknown[]) => unknown>(
   callback: T
 ): T {
-  const callbackRef = useRef(callback);
+  const callbackRef = useRef<T>(callback);
 
   useEffect(() => {
     callbackRef.current = callback;
   }, [callback]);
 
-  return useCallback((...args) => callbackRef.current(...args), []) as T;
+  return useCallback((...args: Parameters<T>) => callbackRef.current(...args), []) as T;
 }
 
 /**
