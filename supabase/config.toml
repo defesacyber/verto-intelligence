@@ -1,0 +1,37 @@
+project_id = "kpjdngknfyhpffntyqcq"
+
+[functions.market-indices]
+verify_jwt = true
+
+[functions.dashboard-summary]
+verify_jwt = true
+
+[functions.market-data-api]
+verify_jwt = true
+
+[functions.bcb-macro-data]
+verify_jwt = true
+
+[functions.idi-data-import]
+verify_jwt = true
+
+[functions.idi-alert-email]
+verify_jwt = true
+
+[functions.reports]
+verify_jwt = true
+
+[functions.market-research]
+verify_jwt = true
+
+[functions.firecrawl-scrape]
+verify_jwt = true
+
+[functions.firecrawl-search]
+verify_jwt = true
+
+[functions.auth]
+verify_jwt = false
+
+[functions.projects]
+verify_jwt = true
