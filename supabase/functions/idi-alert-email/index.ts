@@ -141,9 +141,9 @@ const handler = async (req: Request): Promise<Response> => {
           continue;
         }
 
-        // Get user profile for name
+        // Get user name from public.users
         const { data: profile } = await supabase
-          .from("profiles")
+          .from("users")
           .select("name")
           .eq("id", alert.user_id)
           .single();

@@ -1387,7 +1387,7 @@ async function buildMarketInsights(supabase: any, city: string, macro: MetricCar
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return handleCorsPreflightRequest(req.headers.get('origin')) });
+    return handleCorsPreflightRequest(req.headers.get('origin'));
   }
 
   try {
