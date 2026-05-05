@@ -62,7 +62,8 @@ async function main() {
     console.log('\n👑 Atualizando usuários para admin...\n');
 
     const users = [
-        { email: 'luizalencar@gmail.com', role: 'admin' as const },
+        { email: 'defesacyber@gmail.com', role: 'admin' as const },
+        { email: 'sumatecnologica@gmail.com', role: 'admin' as const },
         { email: 'fabioqmarques@gmail.com', role: 'admin' as const },
     ];
 

@@ -30,7 +30,7 @@ verify_jwt = true
 [functions.firecrawl-search]
 verify_jwt = true
 
-[functions.auth]
+[functions.auth-custom]
 verify_jwt = false
 
 [functions.projects]
