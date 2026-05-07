@@ -54,3 +54,13 @@ final-verification.txt
 
 # Stripe
 .stripe/
+
+# Dependências
+package-lock.json
+node_modules/
+
+# Assets duplicados
+src/assets/logo-kreo.png
+
+# Documentos/Relatórios
+*.pdf
